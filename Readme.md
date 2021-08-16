@@ -13,6 +13,5 @@
 
 <p>This example illustrates how to export MVCxPivotGrid and the bound ChartControl to the same print document. </p>
 
-<br/>
-
-
+### See Also:
+[How to export ASPxPivotGrid and bound WebChartControl to the same print document](https://github.com/DevExpress-Examples/how-to-export-aspxpivotgrid-and-bound-webchartcontrol-to-the-same-print-document-e1164)
