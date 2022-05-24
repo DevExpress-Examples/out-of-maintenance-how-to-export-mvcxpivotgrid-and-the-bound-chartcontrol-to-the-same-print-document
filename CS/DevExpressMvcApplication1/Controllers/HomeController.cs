@@ -99,26 +99,25 @@ namespace DevExpressMvcApplication1.Controllers
             PivotGridSettings settings = new PivotGridSettings();
             settings.Name = "pivotGrid";
             settings.CallbackRouteValues = new { Controller = "Home", Action = "PivotGridPartial" };
+            settings.OptionsData.DataProcessingEngine = PivotDataProcessingEngine.Optimized;
             settings.OptionsView.HorizontalScrollBarMode = DevExpress.Web.ScrollBarMode.Auto;
             settings.OptionsChartDataSource.ProvideDataByColumns = false;
             settings.Width = new System.Web.UI.WebControls.Unit(90, System.Web.UI.WebControls.UnitType.Percentage);
 
             settings.Groups.Add("Order Date");
-            settings.Fields.Add("Country", PivotArea.FilterArea);
-            settings.Fields.Add("City", PivotArea.FilterArea);
+            settings.Fields.AddDataSourceColumn("Country", PivotArea.FilterArea);
+            settings.Fields.AddDataSourceColumn("City", PivotArea.FilterArea);
             settings.Fields.Add(field =>
             {
                 field.Area = PivotArea.ColumnArea;
-                field.FieldName = "OrderDate";
-                field.GroupInterval = PivotGroupInterval.DateYear;
+                field.DataBinding = new DataSourceColumnBinding("OrderDate",  PivotGroupInterval.DateYear);
                 field.Caption = "Year";
                 field.GroupIndex = 0;
             });
             settings.Fields.Add(field =>
             {
                 field.Area = PivotArea.ColumnArea;
-                field.FieldName = "OrderDate";
-                field.GroupInterval = PivotGroupInterval.DateMonth;
+                field.DataBinding = new DataSourceColumnBinding("OrderDate", PivotGroupInterval.DateMonth);
                 field.Caption = "Month";
                 field.GroupIndex = 0;
                 field.InnerGroupIndex = 1;
@@ -127,33 +126,23 @@ namespace DevExpressMvcApplication1.Controllers
             settings.Fields.Add(field =>
             {
                 field.Area = PivotArea.DataArea;
-                field.FieldName = "Quantity";
+                field.DataBinding = new DataSourceColumnBinding("Quantity");
                 field.Visible = false;
             });
             settings.Fields.Add(field =>
             {
                 field.Area = PivotArea.DataArea;
-                field.FieldName = "UnitPrice";
+                field.DataBinding = new DataSourceColumnBinding("UnitPrice");
                 field.Visible = false;
             });
             settings.Fields.Add(field =>
             {
                 field.Area = PivotArea.DataArea;
-                field.FieldName = "Amount";
-                field.UnboundType = DevExpress.Data.UnboundColumnType.Decimal;
-                field.UnboundExpression = "[UnitPrice]*[Quantity]";
+                field.DataBinding = new ExpressionDataBinding("[UnitPrice]*[Quantity]");
                 field.Visible = true;
             });
-            settings.Fields.Add("ProductName", PivotArea.RowArea);
-            settings.PreRender = (sender, e) =>
-            {
-
-                ((MVCxPivotGrid)sender).CollapseAll();
-                var field = ((MVCxPivotGrid)sender).Fields["ProductName"];
-                object[] values = field.GetUniqueValues();
-                field.FilterValues.ValuesIncluded = values.Where(name => name.ToString().StartsWith("N")).ToArray();
-
-            };
+            settings.OptionsData.AutoExpandGroups = DevExpress.Utils.DefaultBoolean.False;
+            settings.Fields.AddDataSourceColumn("ProductName", PivotArea.RowArea);
             settings.ClientSideEvents.BeginCallback = "OnBeforePivotGridCallback";
             settings.ClientSideEvents.EndCallback = "UpdateChart";
 
